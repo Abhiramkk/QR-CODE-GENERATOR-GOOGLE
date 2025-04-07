@@ -1,143 +1,391 @@
 <!DOCTYPE html>
+ 
 <html lang="en">
+ 
 <head>
+ 
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+ 
   <title>GOOGLE SHAPES QR CODE GENERATOR</title>
-  <link rel="icon" href="https://fav.farm/🌀" />
-
+ 
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+ 
   <style>
-    /* Custom Cursor */
+ 
+    :root {
+ 
+      --bg: #1a1a2e;
+ 
+      --primary: #ff4655;
+ 
+      --secondary: #ffafbd;
+ 
+      --text: #ffffff;
+ 
+    }
+ 
+
+ 
     body {
-      cursor: url('https://cdn-icons-png.flaticon.com/512/32/32355.png'), auto;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f8;
-      margin: 0;
-      padding: 0;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    .dark {
-      background-color: #111;
-      color: white;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 3rem auto;
-      text-align: center;
+ 
+      background: var(--bg);
+ 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ 
+      color: var(--text);
+ 
+      display: flex;
+ 
+      flex-direction: column;
+ 
+      align-items: center;
+ 
+      justify-content: center;
+ 
+      height: 100vh;
+ 
       padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      background-color: white;
+ 
+      transition: all 0.4s ease;
+ 
     }
+ 
 
-    .dark .container {
-      background-color: #1e1e1e;
-      box-shadow: 0 0 15px rgba(255,255,255,0.1);
-    }
-
+ 
     h1 {
-      font-size: 2rem;
+ 
+      font-size: 2.5rem;
+ 
       margin-bottom: 1rem;
+ 
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+ 
+      -webkit-background-clip: text;
+ 
+      -webkit-text-fill-color: transparent;
+ 
+      animation: glow 2s ease-in-out infinite alternate;
+ 
+      text-align: center;
+ 
     }
+ 
 
-    input, select, button {
-      padding: 0.7rem;
-      margin: 0.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    .qr-output {
+ 
+    #qr-container {
+ 
+      background: rgba(255, 255, 255, 0.05);
+ 
+      padding: 2rem;
+ 
+      border-radius: 2rem;
+ 
+      box-shadow: 0 0 20px var(--primary);
+ 
       margin-top: 2rem;
+ 
     }
+ 
 
-    #loading {
-      display: none;
-      margin: 1rem auto;
-      width: 40px;
-      height: 40px;
-      border: 5px solid #ddd;
-      border-top: 5px solid #4CAF50;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+ 
+    input, select {
+ 
+      padding: 0.8rem 1rem;
+ 
+      width: 300px;
+ 
+      font-size: 1rem;
+ 
+      border-radius: 10px;
+ 
+      border: none;
+ 
+      margin-bottom: 1rem;
+ 
+      outline: none;
+ 
     }
+ 
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+ 
+    button {
+ 
+      padding: 0.7rem 1.5rem;
+ 
+      font-size: 1rem;
+ 
+      border: none;
+ 
+      border-radius: 12px;
+ 
+      background: var(--primary);
+ 
+      color: white;
+ 
+      cursor: pointer;
+ 
+      transition: all 0.3s ease;
+ 
+      margin: 0 0.5rem;
+ 
     }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>GOOGLE SHAPES QR CODE GENERATOR</h1>
-    <input type="text" id="urlInput" placeholder="Enter website URL" size="40">
-    <br>
-    <select id="styleSelect">
-      <option value="classic">Classic</option>
-      <option value="dots">Google Shapes</option>
-    </select>
-    <button onclick="generateQR()">Generate QR</button>
-    <button onclick="toggleDark()">Toggle Theme</button>
+ 
 
-    <div id="loading"></div>
-    <div class="qr-output" id="qrContainer"></div>
-  </div>
-
-  <script>
-    function toggleDark() {
-      document.body.classList.toggle('dark');
+ 
+    button:hover {
+ 
+      background: var(--secondary);
+ 
+      box-shadow: 0 0 10px var(--secondary);
+ 
+      color: #000;
+ 
     }
+ 
 
-    function generateQR() {
-      const url = document.getElementById("urlInput").value.trim();
-      const style = document.getElementById("styleSelect").value;
-      const qrContainer = document.getElementById("qrContainer");
-      const loading = document.getElementById("loading");
-
-      if (!url) {
-        alert("Please enter a valid URL");
-        return;
+ 
+    @keyframes glow {
+ 
+      from {
+ 
+        text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+ 
       }
-
-      qrContainer.innerHTML = "";
-      loading.style.display = "block";
-
-      setTimeout(() => {
-        loading.style.display = "none";
-        let qrURL = "";
-
-        if (style === "classic") {
-          qrURL = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(url)}&size=250x250`;
-        } else {
-          // Placeholder for a custom-styled Google QR (could be swapped with another API or image later)
-          qrURL = `https://qrtiger.com/qr?url=${encodeURIComponent(url)}`;
-        }
-
-        const img = document.createElement("img");
-        img.src = qrURL;
-        img.alt = "QR Code";
-        img.style.maxWidth = "100%";
-        img.style.borderRadius = "16px";
-        img.style.marginTop = "1rem";
-
-        qrContainer.appendChild(img);
-      }, 1200);
+ 
+      to {
+ 
+        text-shadow: 0 0 20px var(--secondary), 0 0 30px var(--secondary);
+ 
+      }
+ 
     }
+ 
+  </style>
+ 
+</head>
+ 
+<body>
+ 
+
+ 
+  <h1>GOOGLE SHAPES QR CODE GENERATOR</h1>
+ 
+
+ 
+  <input id="url-input" type="text" placeholder="Enter your link here..." />
+ 
+
+ 
+  <select id="mode-select" onchange="updateQRMode()">
+ 
+    <option value="styled">🎨 Styled</option>
+ 
+    <option value="classic">🔲 Classic</option>
+ 
+  </select>
+ 
+
+ 
+  <select id="theme-select" onchange="changeTheme()">
+ 
+    <option value="dark">🌑 Dark Mode</option>
+ 
+    <option value="light">🌞 Light Mode</option>
+ 
+    <option value="neon">🌈 Neon Cyber</option>
+ 
+    <option value="google">🔵 Google Blue</option>
+ 
+  </select>
+ 
+
+ 
+  <div>
+ 
+    <button onclick="generateQR()">Generate QR</button>
+ 
+    <button onclick="downloadQR()">Download PNG</button>
+ 
+  </div>
+ 
+
+ 
+  <div id="qr-container"></div>
+ 
+
+ 
+  <script>
+ 
+    const qrContainer = document.getElementById("qr-container");
+ 
+
+ 
+    const themeStyles = {
+ 
+      dark: { bg: "#1a1a2e", primary: "#ff4655", secondary: "#ffafbd", text: "#ffffff", dot: "#ff4655", corner: "#ffafbd" },
+ 
+      light: { bg: "#ffffff", primary: "#333333", secondary: "#888888", text: "#000000", dot: "#222222", corner: "#444444" },
+ 
+      neon: { bg: "#000000", primary: "#39ff14", secondary: "#00f0ff", text: "#39ff14", dot: "#39ff14", corner: "#00f0ff" },
+ 
+      google: { bg: "#e8f0fe", primary: "#4285f4", secondary: "#34a853", text: "#202124", dot: "#4285f4", corner: "#34a853" }
+ 
+    };
+ 
+
+ 
+    let currentTheme = "dark";
+ 
+    let currentMode = "styled";
+ 
+
+ 
+    let qrCode = new QRCodeStyling({
+ 
+      width: 300,
+ 
+      height: 300,
+ 
+      data: "https://grimm.zone",
+ 
+      dotsOptions: { color: themeStyles.dark.dot, type: "dots" },
+ 
+      backgroundOptions: { color: "#ffffff" },
+ 
+      cornersSquareOptions: { color: themeStyles.dark.corner, type: "extra-rounded" },
+ 
+      cornersDotOptions: { color: themeStyles.dark.dot, type: "dot" }
+ 
+    });
+ 
+
+ 
+    qrCode.append(qrContainer);
+ 
+
+ 
+    function generateQR() {
+ 
+      const url = document.getElementById("url-input").value;
+ 
+      if (!url.trim()) return alert("Drop a valid URL please 🙃");
+ 
+      qrCode.update({ data: url });
+ 
+    }
+ 
+
+ 
+    function downloadQR() {
+ 
+      qrCode.download({ name: "google-shapes-qr", extension: "png" });
+ 
+    }
+ 
+
+ 
+    function changeTheme() {
+ 
+      currentTheme = document.getElementById("theme-select").value;
+ 
+      const vars = themeStyles[currentTheme];
+ 
+
+ 
+      document.documentElement.style.setProperty("--bg", vars.bg);
+ 
+      document.documentElement.style.setProperty("--primary", vars.primary);
+ 
+      document.documentElement.style.setProperty("--secondary", vars.secondary);
+ 
+      document.documentElement.style.setProperty("--text", vars.text);
+ 
+
+ 
+      if (currentMode === "styled") {
+ 
+        qrCode.update({
+ 
+          dotsOptions: { color: vars.dot },
+ 
+          cornersSquareOptions: { color: vars.corner },
+ 
+          cornersDotOptions: { color: vars.dot }
+ 
+        });
+ 
+      }
+ 
+    }
+ 
+
+ 
+    function updateQRMode() {
+ 
+      currentMode = document.getElementById("mode-select").value;
+ 
+      qrContainer.innerHTML = ""; // wipe old QR
+ 
+
+ 
+      if (currentMode === "classic") {
+ 
+        qrCode = new QRCodeStyling({
+ 
+          width: 300,
+ 
+          height: 300,
+ 
+          data: document.getElementById("url-input").value || "https://grimm.zone",
+ 
+          dotsOptions: { color: "#000000", type: "square" },
+ 
+          backgroundOptions: { color: "#ffffff" },
+ 
+          cornersSquareOptions: { color: "#000000", type: "square" },
+ 
+          cornersDotOptions: { color: "#000000", type: "square" }
+ 
+        });
+ 
+      } else {
+ 
+        const vars = themeStyles[currentTheme];
+ 
+        qrCode = new QRCodeStyling({
+ 
+          width: 300,
+ 
+          height: 300,
+ 
+          data: document.getElementById("url-input").value || "https://grimm.zone",
+ 
+          dotsOptions: { color: vars.dot, type: "dots" },
+ 
+          backgroundOptions: { color: "#ffffff" },
+ 
+          cornersSquareOptions: { color: vars.corner, type: "extra-rounded" },
+ 
+          cornersDotOptions: { color: vars.dot, type: "dot" }
+ 
+        });
+ 
+      }
+ 
+
+ 
+      qrCode.append(qrContainer);
+ 
+    }
+ 
   </script>
+ 
+
+ 
 </body>
+ 
+
+</html>
+ 
+
 </html>
